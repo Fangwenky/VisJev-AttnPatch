@@ -43,6 +43,19 @@ python inference.py \
   --zoom_thresh 0.82
 ```
 
-## License
+## Citation
 
-Apache License 2.0
+```bibtex
+@misc{fang2026visjevattnpatch,
+  title={VisJev-AttnPatch: Single-Pass DOM-Free GUI Grounding via Pretrained QK-Attention Pointer Routing, Calibrated Abstention, and Sub-Patch Refinement},
+  author={Fang Jinheng},
+  year={2026},
+  howpublished={\url{https://github.com/Fangwenky/VisJev-AttnPatch}}
+}
+```
+
+## Contact & License
+
+- **Author**: Fang Jinheng (`fangmierui@gmail.com`)
+- **Repository**: https://github.com/Fangwenky/VisJev-AttnPatch
+- **License**: Apache License 2.0

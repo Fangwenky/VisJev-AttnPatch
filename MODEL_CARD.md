@@ -26,3 +26,5 @@ A **30.5 MB** LoRA (`r=24`, top-16 decoder layers) + Pretrained QK-Attention Poi
 - **Trainable Parameters**: 4.92M LoRA (`layers 20..35`, `q/k/v/o_proj`, `r=24`) + 2.69M `VisJevAttnPatchHeadV3`
 - **Training Data**: 1,200 unique filtered samples from `agentsea/wave-ui-25k` (`purpose`/`description` fields) + 20% hard-negative mismatched instructions
 - **Hardware**: Single NVIDIA L4 (24 GB VRAM), ~29 minutes
+- **Author & Contact**: Fang Jinheng (`fangmierui@gmail.com`)
+- **Code Repository**: https://github.com/Fangwenky/VisJev-AttnPatch
