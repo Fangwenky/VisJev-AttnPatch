@@ -176,35 +176,102 @@ class VisJevGrounder:
         return logits, Hg, Wg
 
     @torch.no_grad()
-    def predict(self, img: Image.Image, instruction: str, zoom_thresh: float = 0.82, abstain_thresh: float = 0.50):
+    def predict(
+        self,
+        img: Image.Image,
+        instruction: str,
+        zoom_thresh: float = 0.85,
+        abstain_thresh: float = 0.50,
+        verify_zoom: bool = True,
+        tiled_4k: bool = False,
+    ):
+        """
+        Single-pass grounding with optional Confidence-Verified Adaptive InnerZoom
+        and 2x2 Overlapping Tiled QK-Pointer Routing for ultra-high-resolution (4K) screens.
+        """
         img = img.convert("RGB")
+        W, H = img.size
         t0 = time.perf_counter()
+
+        # High-resolution 2x2 overlapping tiled QK-pointer routing + 4x local zoom
+        if tiled_4k or (W * H >= 2_500_000):
+            tiles = [
+                (0.0, 0.0, 0.58, 0.58),
+                (0.42, 0.0, 1.0, 0.58),
+                (0.0, 0.42, 0.58, 1.0),
+                (0.42, 0.42, 1.0, 1.0),
+            ]
+            best_margin = -1e9
+            best_xy = (0.5, 0.5)
+            best_p_abs = 1.0
+            for (tx1, ty1, tx2, ty2) in tiles:
+                t_img = img.crop((int(tx1 * W), int(ty1 * H), int(tx2 * W), int(ty2 * H)))
+                lgt, Hgt, Wgt = self._single_pass(t_img, instruction)
+                margin = float(lgt[:-1].max().item() - lgt[-1].item())
+                if margin > best_margin:
+                    best_margin = margin
+                    pt = F.softmax(lgt, dim=-1)
+                    best_p_abs = float(pt[-1].item())
+                    (lx, ly), _ = self._subpatch_soft_argmax(pt[:-1], Hgt, Wgt)
+                    best_xy = (tx1 + lx * (tx2 - tx1), ty1 + ly * (ty2 - ty1))
+
+            cx1 = max(0.0, min(0.75, best_xy[0] - 0.125))
+            cy1 = max(0.0, min(0.75, best_xy[1] - 0.125))
+            crop4x = img.crop((int(cx1 * W), int(cy1 * H), int((cx1 + 0.25) * W), int((cy1 + 0.25) * H)))
+            lg4, Hg4, Wg4 = self._single_pass(crop4x, instruction)
+            p4 = F.softmax(lg4, dim=-1)
+            (lx4, ly4), c3_4 = self._subpatch_soft_argmax(p4[:-1], Hg4, Wg4)
+            x, y = cx1 + lx4 * 0.25, cy1 + ly4 * 0.25
+            conf = self._calibrate(c3_4)
+            elapsed_ms = round((time.perf_counter() - t0) * 1000.0, 1)
+            return {
+                "x_norm": round(x, 4),
+                "y_norm": round(y, 4),
+                "x_px": int(round(x * W)),
+                "y_px": int(round(y * H)),
+                "confidence": round(conf, 4),
+                "abstain_prob": round(best_p_abs, 4),
+                "abstain": best_p_abs >= abstain_thresh,
+                "innerzoom_triggered": True,
+                "zoom_accepted": True,
+                "tiled_4k_used": True,
+                "latency_ms": elapsed_ms,
+            }
+
         logits, Hg, Wg = self._single_pass(img, instruction)
         probs = F.softmax(logits, dim=-1)
         p_abstain = float(probs[-1].item())
         (x, y), c3 = self._subpatch_soft_argmax(probs[:-1], Hg, Wg)
         conf = self._calibrate(c3)
         zoomed = False
+        zoom_accepted = False
 
         if p_abstain < abstain_thresh and conf < zoom_thresh:
             zoomed = True
-            W, H = img.size
             cx1, cy1 = max(0.0, min(0.5, x - 0.25)), max(0.0, min(0.5, y - 0.25))
             crop = img.crop((int(cx1 * W), int(cy1 * H), int((cx1 + 0.5) * W), int((cy1 + 0.5) * H)))
             lg2, Hg2, Wg2 = self._single_pass(crop, instruction)
-            (lx, ly), _ = self._subpatch_soft_argmax(F.softmax(lg2, dim=-1)[:-1], Hg2, Wg2)
-            x, y = cx1 + lx * 0.5, cy1 + ly * 0.5
+            probs2 = F.softmax(lg2, dim=-1)
+            p_abs2 = float(probs2[-1].item())
+            (lx, ly), c3_2 = self._subpatch_soft_argmax(probs2[:-1], Hg2, Wg2)
+            conf2 = self._calibrate(c3_2)
+            if (not verify_zoom) or (conf2 >= conf and p_abs2 < abstain_thresh):
+                x, y = cx1 + lx * 0.5, cy1 + ly * 0.5
+                conf = conf2
+                zoom_accepted = True
 
         elapsed_ms = round((time.perf_counter() - t0) * 1000.0, 1)
         return {
             "x_norm": round(x, 4),
             "y_norm": round(y, 4),
-            "x_px": int(round(x * img.width)),
-            "y_px": int(round(y * img.height)),
+            "x_px": int(round(x * W)),
+            "y_px": int(round(y * H)),
             "confidence": round(conf, 4),
             "abstain_prob": round(p_abstain, 4),
             "abstain": p_abstain >= abstain_thresh,
             "innerzoom_triggered": zoomed,
+            "zoom_accepted": zoom_accepted,
+            "tiled_4k_used": False,
             "latency_ms": elapsed_ms,
         }
 
@@ -214,12 +281,13 @@ def main():
     parser.add_argument("--checkpoint", required=True, help="Path to visjev_phase6_best.pt")
     parser.add_argument("--image", required=True, help="Path to GUI screenshot")
     parser.add_argument("--instruction", required=True, help="UI element instruction")
-    parser.add_argument("--zoom_thresh", type=float, default=0.82, help="Confidence threshold for 2x InnerZoom")
+    parser.add_argument("--zoom_thresh", type=float, default=0.85, help="Confidence threshold for 2x CV-InnerZoom")
+    parser.add_argument("--tiled_4k", action="store_true", help="Force 2x2 overlapping tiled routing + 4x zoom")
     args = parser.parse_args()
 
     model = VisJevGrounder(args.checkpoint)
     img = Image.open(args.image)
-    result = model.predict(img, args.instruction, zoom_thresh=args.zoom_thresh)
+    result = model.predict(img, args.instruction, zoom_thresh=args.zoom_thresh, tiled_4k=args.tiled_4k)
     print(result)
 
 
