@@ -18,10 +18,18 @@
 | **Full ScreenSpot-v2 (`n=1,272`) Single-Pass** | **81.92%** | **89.26% / 70.64%** | **331.6 ms** | **6.49x** | - | - |
 | **Full ScreenSpot-v2 (`n=1,272`) + InnerZoom (`0.85`)** | **83.02%** | **90.02% / 72.18%** | **356.5 ms** | **6.03x** | - | - |
 
+## Paper
+
+- **PDF**: [VisJev_AttnPatch_Paper.pdf](paper/VisJev_AttnPatch_Paper.pdf) (4-page two-column conference camera-ready format with vector TikZ figures, aligned equations, and full ScreenSpot-v2 tables)
+- **LaTeX Source**: [VisJev_AttnPatch_Paper.tex](paper/VisJev_AttnPatch_Paper.tex)
+
 ## Repository Structure
 
 ```text
 .
+├── paper/
+│   ├── VisJev_AttnPatch_Paper.pdf  # Camera-ready 4-page conference paper (vector figures & booktabs tables)
+│   └── VisJev_AttnPatch_Paper.tex  # Reproducible LaTeX + TikZ source
 ├── checkpoints/
 │   └── visjev_phase6_best.pt       # 30.5 MB LoRA (r=24, top-16 layers) + QK-Pointer Router head
 ├── inference.py                    # Standalone single-pass + Sub-Patch + InnerZoom inference CLI
