@@ -2,11 +2,11 @@
 
 % --- Page Geometry (CVPR/ACL-style two-column conference layout) ---
 \usepackage[
-  top=0.66in,
-  bottom=0.66in,
-  left=0.64in,
-  right=0.64in,
-  columnsep=0.24in
+  top=0.58in,
+  bottom=0.58in,
+  left=0.59in,
+  right=0.59in,
+  columnsep=0.21in
 ]{geometry}
 
 % --- Float Placement & Spacing Tuning (compact 4-page camera-ready) ---
@@ -18,10 +18,10 @@
 \renewcommand{\dblfloatpagefraction}{0.75}
 \setcounter{topnumber}{3}
 \setcounter{dbltopnumber}{2}
-\setlength{\textfloatsep}{7pt plus 2pt minus 2pt}
-\setlength{\dbltextfloatsep}{8pt plus 2pt minus 2pt}
-\setlength{\floatsep}{6pt plus 2pt minus 2pt}
-\setlength{\dblfloatsep}{6pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{5pt plus 1.5pt minus 1.5pt}
+\setlength{\dbltextfloatsep}{6pt plus 1.5pt minus 1.5pt}
+\setlength{\floatsep}{5pt plus 1.5pt minus 1.5pt}
+\setlength{\dblfloatsep}{5pt plus 1.5pt minus 1.5pt}
 
 % --- Typography & Micro-typography (BasicTeX 2026 native) ---
 \usepackage[T1]{fontenc}
@@ -71,12 +71,12 @@
 % --- Section Styling ---
 \makeatletter
 \renewcommand\section{\@startsection{section}{1}{\z@}%
-  {-2.0ex \@plus -0.5ex \@minus -0.2ex}%
-  {1.0ex \@plus 0.2ex}%
+  {-1.6ex \@plus -0.4ex \@minus -0.2ex}%
+  {0.8ex \@plus 0.2ex}%
   {\normalfont\large\bfseries\color{navy}}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-  {-1.6ex \@plus -0.4ex \@minus -0.2ex}%
-  {0.7ex \@plus 0.2ex}%
+  {-1.3ex \@plus -0.3ex \@minus -0.2ex}%
+  {0.55ex \@plus 0.15ex}%
   {\normalfont\normalsize\bfseries\color{navy!85!black}}}
 \makeatother
 
@@ -107,7 +107,7 @@
 \DeclareMathOperator{\MLP}{MLP}
 
 \setlength{\parindent}{1em}
-\setlength{\parskip}{1.5pt plus 0.8pt minus 0.4pt}
+\setlength{\parskip}{1.0pt plus 0.5pt minus 0.3pt}
 
 % --- Custom Conference Header ---
 \makeatletter
@@ -139,7 +139,7 @@
 % ABSTRACT
 % =========================================================================
 \begin{abstract}
-\noindent Vision-Language Models (VLMs) powering Computer Use Agents (CUAs) rely predominantly on autoregressive decoding to emit structured click coordinates (e.g., JSON bounding boxes), incurring ${\sim}2.16$\,s latency per UI interaction and lacking native mechanisms to abstain when a requested element is absent. We introduce \textbf{VisJev-AttnPatch}, a lightweight, DOM-free single-forward-pass decision architecture that replaces autoregressive coordinate generation with calibrated readout over visual patches. Rather than training a disconnected visual head from scratch, VisJev-AttnPatch extracts $O(N_{\mathrm{vis}})$ query-to-visual dot-product scores directly from the VLM's pretrained top-layer $Q/K$ projections without materializing $N{\times}N$ attention matrices, combines $M{=}192$ pointer heads via a query-conditioned router alongside a learnable \texttt{[ABSTAIN]} refusal prototype, and applies zero-cost $3{\times}3$ sub-patch soft-argmax refinement. To eliminate mobile negative transfer and 4K resolution bottlenecks without retraining, we further introduce \textbf{Confidence-Verified InnerZoom (CV-Zoom)} and \textbf{$2{\times}2$ Overlapping Tiled QK-Pointer Routing}. Training only $0.13\%$ LoRA parameters and a $2.69\text{M}$-parameter head ($30.5\,\text{MB}$ total checkpoint) on $1{,}200$ filtered web samples from WaveUI-25k atop Qwen2.5-VL-3B-Instruct, VisJev-AttnPatch achieves \textbf{81.92\%} zero-shot single-pass accuracy ($0$ decoded tokens) across all $1{,}272$ ScreenSpot-v2 samples at \textbf{333.3\,ms} mean latency (\textbf{6.48$\times$ mean speedup} over matched autoregressive decoding), rising to \textbf{83.25\%} at \textbf{5.48$\times$} mean speedup ($\theta{=}0.82$) and \textbf{84.36\%} at \textbf{4.52$\times$} mean speedup ($\theta{=}0.85$) with CV-Zoom---strictly outperforming the matched Qwen2.5-VL-3B autoregressive baseline (\textbf{82.33\%} at $2{,}158.5\,\text{ms}$ mean) and LiteTrain coordinate-free baselines while retaining \textbf{0.9535} hard same-platform abstention AUROC (\textbf{0.9720} cross-platform). On 4K ScreenSpot-Pro ($n{=}200$), zero-retraining $2{\times}2$ tiled routing plus $4{\times}$ zoom leaps from $5.0\%$ to \textbf{31.5\%}, surpassing official Qwen2.5-VL-3B autoregressive decoding ($25.9\%$) with $0$ decoded tokens.
+\noindent Vision-Language Models (VLMs) powering Computer Use Agents (CUAs) rely predominantly on autoregressive decoding to emit structured click coordinates (e.g., JSON bounding boxes), incurring $2.16\text{--}2.99$\,s latency per UI interaction and lacking native mechanisms to abstain when a requested element is absent. We introduce \textbf{VisJev-AttnPatch}, a lightweight, DOM-free single-forward-pass decision architecture that replaces autoregressive coordinate generation with calibrated readout over visual patches. Rather than training a disconnected visual head from scratch, VisJev-AttnPatch extracts $O(N_{\mathrm{vis}})$ query-to-visual dot-product scores directly from the VLM's pretrained top-layer $Q/K$ projections without materializing $N{\times}N$ attention matrices, combines multi-head pointer maps ($M{=}192$ on 3B; $M{=}336$ on 7B) via a query-conditioned router alongside a learnable \texttt{[ABSTAIN]} refusal prototype, and applies zero-cost $3{\times}3$ sub-patch soft-argmax refinement ($p{=}3.11{\times}10^{-10}$ vs.\ discrete argmax). To eliminate mobile negative transfer and 4K resolution bottlenecks without retraining, we further introduce \textbf{Confidence-Verified InnerZoom (CV-Zoom)} and \textbf{$2{\times}2$ Tiled QK-Pointer Routing}. Training on only $1{,}200$ filtered WaveUI-25k web samples atop \textbf{Qwen2.5-VL-3B} ($30.5\,\text{MB}$ checkpoint) and \textbf{Qwen2.5-VL-7B} ($34.5\,\text{MB}$ checkpoint), VisJev-AttnPatch achieves \textbf{81.92\%} (3B, $6.48\times$ mean speedup) and \textbf{83.73\%} (7B, $6.46\times$ mean speedup) zero-shot single-pass accuracy across all $1{,}272$ ScreenSpot-v2 samples, rising with CV-Zoom to \textbf{84.36\%--84.91\%} on 3B ($p{=}3.12{\times}10^{-6}$) and \textbf{84.67\%} on 7B ($5.17\times$ mean speedup)---strictly outperforming matched 3B/7B autoregressive decoding ($82.33\%$ / $79.33\%$) while achieving \textbf{0.9535--0.9576} hard same-platform abstention AUROC (\textbf{0.9720--0.9754} cross-platform) and \textbf{0.0313--0.0776} ECE. On 4K ScreenSpot-Pro ($n{=}200$), zero-retraining $2{\times}2$ tiled routing plus $4{\times}$ zoom reaches \textbf{32.0\%} (3B) and \textbf{38.0\%} (7B) with $0$ decoded tokens.
 \end{abstract}
 
 % =========================================================================
@@ -264,9 +264,9 @@ Recent coordinate-free and single-pass paradigms---including \href{https://githu
 We address all four bottlenecks with \textbf{VisJev-AttnPatch} (Figure~\ref{fig:arch}), contributing:
 \begin{itemize}
   \setlength{\itemsep}{2pt}\setlength{\parskip}{0pt}
-  \item \textbf{$O(N_{\mathrm{vis}})$ Pretrained QK-Pointer Routing \& 0\,ms Sub-Patch Soft-Argmax:} Reuses top-$12$ pretrained $q_{\mathrm{proj}}/k_{\mathrm{proj}}$ heads plus $3{\times}3$ soft-argmax, lifting ablation accuracy from \textbf{7.00\%} to \textbf{83.33\%} ($n{=}300$) and reaching \textbf{81.92\%} on full ScreenSpot-v2 at \textbf{6.48$\times$} mean speedup.
-  \item \textbf{Confidence-Verified InnerZoom (CV-Zoom):} Accepts a $2{\times}$ crop only when crop confidence increases without refusal, eliminating mobile negative transfer (iOS text $92.75\% \rightarrow \mathbf{100.00\%}$) and lifting full ScreenSpot-v2 to \textbf{84.36\%} ($4.52\times$ mean speedup) and \textbf{83.25\%} ($5.48\times$ mean speedup) with $0\%$ AR tokens.
-  \item \textbf{Multi-Difficulty Calibrated Abstention \& Zero-Retraining 4K Tiled Routing:} Achieves \textbf{0.9535} hard same-platform AUROC (\textbf{0.9720} cross-platform) and \textbf{0.0776 ECE}, while reusing the target-presence margin $\max(\bm{z}_{\mathrm{patch}}) - z_{\mathrm{abstain}}$ across $2{\times}2$ overlapping tiles to jump from $5.0\%$ to \textbf{31.5\%} on 4K ScreenSpot-Pro ($n{=}200$), beating Qwen2.5-VL-3B AR ($25.9\%$) with $0$ decoded tokens.
+  \item \textbf{Cross-Scale $O(N_{\mathrm{vis}})$ QK-Pointer Routing \& 0\,ms Sub-Patch Soft-Argmax:} Taps top-$12$ pretrained $q_{\mathrm{proj}}/k_{\mathrm{proj}}$ layers across 3B ($M{=}192$) and 7B ($M{=}336$) backbones with $3{\times}3$ soft-argmax ($p{=}3.11{\times}10^{-10}$), reaching \textbf{81.92\%} (3B, $6.48\times$) and \textbf{83.73\%} (7B, $6.46\times$) single-pass accuracy on full ScreenSpot-v2.
+  \item \textbf{Confidence-Verified InnerZoom (CV-Zoom):} Accepts a $2{\times}$ crop only when crop confidence increases without refusal ($p{=}0.0498$ vs.\ naive zoom; $p{=}3.12{\times}10^{-6}$ vs.\ single-pass), eliminating mobile negative transfer (iOS text $\mathbf{100.00\%}$) and reaching \textbf{84.36\%--84.91\%} (3B) and \textbf{84.67\%} (7B) with $0\%$ AR tokens.
+  \item \textbf{Calibrated Abstention \& Zero-Retraining 4K Tiled Routing:} Achieves \textbf{0.9535--0.9576} hard same-platform AUROC (\textbf{0.9720--0.9754} cross-platform) and \textbf{0.0313} ECE (7B), while $2{\times}2$ tiled routing + $4{\times}$ zoom reaches \textbf{32.0\%} (3B) and \textbf{38.0\%} (7B) on 4K ScreenSpot-Pro ($n{=}200$), surpassing GUI-Actor-7B-LiteTrain+Verifier ($35.8\%$) with $0$ decoded tokens.
 \end{itemize}
 
 % =========================================================================
@@ -325,43 +325,56 @@ At inference time, rather than clicking the center of the discrete argmax patch 
 \end{equation}
 
 % =========================================================================
-% TABLE 1: MAIN COMPARISON (Full Width, Matched Baseline + Mean & Median Latencies)
+% TABLE 1: MAIN COMPARISON Across 3B & 7B Backbones
 % =========================================================================
 \begin{table*}[t]
 \centering
-\caption{Controlled ($n{=}300$, exact matched split) and full-benchmark ($n{=}1{,}272$, exact sample-weighted micro-averages) zero-shot evaluation on ScreenSpot-v2 (NVIDIA L4 GPU, $768$-token visual budget unless noted). Speedup is computed against the matched Official Qwen2.5-VL-3B AR mean latency ($2{,}158.5\,\text{ms}$).}
+\caption{Controlled ($n{=}300$, exact matched split) and full-benchmark ($n{=}1{,}272$, exact sample-weighted micro-averages with $95\%$ bootstrap CIs) zero-shot evaluation on ScreenSpot-v2 across \textbf{Qwen2.5-VL-3B} and \textbf{Qwen2.5-VL-7B} backbones (NVIDIA L4 GPU, $768$-token visual budget unless noted). Speedup is computed against the respective matched 3B ($2{,}158.5\,\text{ms}$) or 7B ($2{,}991.0\,\text{ms}$) AR mean latency.}
 \label{tab:main}
-\footnotesize
-\setlength{\tabcolsep}{3.0pt}
+\scriptsize
+\setlength{\tabcolsep}{2.8pt}
 \begin{tabular}{@{}lcccccc@{}}
 \toprule
-\textbf{Method} & \textbf{Overall $\uparrow$} & \textbf{Text / Icon} & \textbf{Med.\ / Mean (ms) $\downarrow$} & \textbf{Mean Spd.\ $\uparrow$} & \textbf{ECE $\downarrow$} & \textbf{Abst.\ AUROC $\uparrow$} \\
+\textbf{Method / Backbone Scale} & \textbf{Overall (95\% CI) $\uparrow$} & \textbf{Text / Icon} & \textbf{Med.\ / Mean (ms) $\downarrow$} & \textbf{Mean Spd.\ $\uparrow$} & \textbf{ECE $\downarrow$} & \textbf{Abst.\ AUROC (E / H) $\uparrow$} \\
 \midrule
 \multicolumn{7}{@{}l}{\textit{\color{slate}Matched Controlled Zero-Shot Evaluation ($n{=}300$, seed\,=\,42; Phase 1 at $n{=}200$)}} \\
-Baseline A: Official Qwen2.5-VL-3B AR (Matched $n{=}300$) & 82.33\% & 89.70\% / 73.33\% & 2,139.1 / 2,158.5 & 1.00$\times$ & --- & --- \\
-Phase 1: Frozen Backbone + 3.98M Head ($n{=}200$) & 7.50\% & 8.40\% / 6.17\% & 318.1 / --- & 6.79$\times$\textsuperscript{$\dagger$} & 0.3366 & 0.5287 \\
-Phase 4: VisJev-AttnPatch v4 (512 Fast) & 72.33\% & 80.61\% / 62.22\% & \textbf{233.4} / --- & \textbf{9.25$\times$}\textsuperscript{$\dagger$} & 0.1366 & 0.9674 \\
-Phase 4: VisJev-AttnPatch v4 (768 Res.) & 77.00\% & 87.27\% / 64.44\% & 337.6 / --- & 6.39$\times$\textsuperscript{$\dagger$} & 0.0880 & \textbf{0.9778} \\
-Phase 6: VisJev-AttnPatch v6 (Gaussian, Discrete) & 77.33\% & 86.06\% / 66.67\% & 332.8 / --- & 6.49$\times$\textsuperscript{$\dagger$} & \textbf{0.0776} & 0.9719 \\
+Baseline A1: Official Qwen2.5-VL-3B AR (Matched $n{=}300$) & 82.33\% & 89.70\% / 73.33\% & 2,139.1 / 2,158.5 & 1.00$\times$ & --- & --- \\
+Baseline A2: Official Qwen2.5-VL-7B AR (Matched $n{=}300$) & 79.33\% & 85.45\% / 71.85\% & 2,988.3 / 2,991.0 & 1.00$\times$ & --- & --- \\
+Phase 1: Frozen 3B Backbone + 3.98M Head ($n{=}200$) & 7.50\% & 8.40\% / 6.17\% & 318.1 / --- & 6.79$\times$\textsuperscript{$\dagger$} & 0.3366 & 0.5287 / --- \\
+Phase 4: VisJev-3B v4 (512-tok Fast) & 72.33\% & 80.61\% / 62.22\% & \textbf{233.4} / --- & \textbf{9.25$\times$}\textsuperscript{$\dagger$} & 0.1366 & 0.9674 / --- \\
+Phase 6: VisJev-3B v6 (768-tok, $1{\times}1$ Discrete) & 77.33\% & 86.06\% / 66.67\% & 332.8 / --- & 6.49$\times$\textsuperscript{$\dagger$} & 0.0776 & 0.9720 / 0.9535 \\
 \rowcolor{rowhl}
-\textbf{VisJev-v6 + 0\,ms Sub-Patch (Single-Pass)} & 83.33\% & --- & 327.7 / --- & 6.59$\times$\textsuperscript{$\dagger$} & \textbf{0.0776} & 0.9719 \\
+\textbf{VisJev-3B + 0\,ms $3{\times}3$ Sub-Patch (Single-Pass)} & 83.33\% & --- & 327.7 / --- & 6.59$\times$\textsuperscript{$\dagger$} & 0.0776 & 0.9720 / 0.9535 \\
 \rowcolor{rowhl}
-\textbf{VisJev-v6 + InnerZoom ($\theta{=}0.82$, AR\,=\,0\%)} & \textbf{85.67\%} & --- & 335.9 / 407.4 & 5.30$\times$ & \textbf{0.0776} & 0.9719 \\
+\textbf{VisJev-3B + InnerZoom ($\theta{=}0.82$, AR\,=\,0\%)} & 85.67\% & --- & 335.9 / 407.4 & 5.30$\times$ & 0.0776 & 0.9720 / 0.9535 \\
+\rowcolor{rowhl}
+\textbf{VisJev-7B + 0\,ms $3{\times}3$ Sub-Patch (Single-Pass)} & \textbf{86.00\%} & --- & 457.8 / 463.2 & 6.46$\times$ & \textbf{0.0313} & \textbf{0.9754 / 0.9576} \\
 \midrule
 \multicolumn{7}{@{}l}{\textit{\color{slate}Full ScreenSpot-v2 Zero-Shot Benchmark ($n{=}1{,}272$, exact weighted 718 Text / 554 Icon)}} \\
-VisJev-v6 Discrete Single-Pass & 77.75\% & --- & 331.4 / 333.3 & 6.48$\times$ & --- & --- \\
+VisJev-3B Discrete ($1{\times}1$ Center) & 77.75\% [75.5, 80.0] & --- & 331.4 / 333.3 & 6.48$\times$ & --- & --- \\
+VisJev-3B + $5{\times}5$ Sub-Patch Single-Pass & 81.45\% [79.3, 83.6] & --- & 331.4 / 333.3 & 6.48$\times$ & --- & --- \\
 \rowcolor{rowhl}
-\textbf{VisJev-v6 + 0\,ms Sub-Patch Single-Pass (SP)} & 81.92\% & 90.53\% / 70.76\% & \textbf{331.4 / 333.3} & \textbf{6.48$\times$} & --- & --- \\
-VisJev-v6 + Naive InnerZoom ($\theta{=}0.85$, 46.5\% esc.) & 83.02\% & 90.81\% / 72.92\% & 356.7 / 477.4 & 4.52$\times$ & --- & --- \\
+\textbf{VisJev-3B + 0\,ms $3{\times}3$ Sub-Patch Single-Pass (SP)} & 81.92\% [79.8, 84.0] & 90.53\% / 70.76\% & \textbf{331.4 / 333.3} & \textbf{6.48$\times$} & --- & --- \\
+VisJev-3B + Naive InnerZoom ($\theta{=}0.85$, 46.5\% esc.) & 83.02\% & 90.81\% / 72.92\% & 356.7 / 477.4 & 4.52$\times$ & --- & --- \\
 \rowcolor{rowhl}
-\textbf{VisJev-v6 + CV-Zoom ($\theta{=}0.82$, 19.5\% esc.)} & 83.25\% & 92.06\% / 71.84\% & 335.1 / 393.9 & 5.48$\times$ & --- & --- \\
+\textbf{VisJev-3B + CV-Zoom ($\theta{=}0.82$, 19.5\% esc.)} & 83.25\% [81.2, 85.2] & 92.06\% / 71.84\% & 335.1 / 393.9 & 5.48$\times$ & --- & --- \\
 \rowcolor{rowhl}
-\textbf{VisJev-v6 + CV-Zoom ($\theta{=}0.85$, 46.5\% esc.)} & \textbf{84.36\%} & \textbf{92.76\% / 73.47\%} & 356.7 / 477.4 & 4.52$\times$ & --- & --- \\
+\textbf{VisJev-3B + CV-Zoom ($\theta{=}0.85$, 46.5\% esc.)} & 84.36\% [82.3, 86.3] & \textbf{92.76\%} / 73.47\% & 356.7 / 477.4 & 4.52$\times$ & --- & --- \\
+\rowcolor{rowhl}
+\textbf{VisJev-3B + CV-Zoom ($\theta{=}0.90$, 84.2\% esc.)} & \textbf{84.91\%} [82.9, 86.9] & --- & 648.3 / 587.3 & 3.68$\times$ & --- & --- \\
+VisJev-7B Discrete ($1{\times}1$ Center) & 77.44\% & --- & 457.8 / 463.2 & 6.46$\times$ & --- & --- \\
+\rowcolor{rowhl}
+\textbf{VisJev-7B + 0\,ms $3{\times}3$ Sub-Patch Single-Pass (SP)} & 83.73\% & 90.95\% / 74.37\% & 457.8 / 463.2 & 6.46$\times$ & --- & --- \\
+VisJev-7B + Naive InnerZoom ($\theta{=}0.85$, 25.9\% esc.) & 84.28\% & 91.09\% / 75.45\% & 484.2 / 578.1 & 5.17$\times$ & --- & --- \\
+\rowcolor{rowhl}
+\textbf{VisJev-7B + CV-Zoom ($\theta{=}0.82$, 11.6\% esc.)} & 84.12\% & 91.23\% / 74.91\% & 460.3 / 515.3 & 5.80$\times$ & --- & --- \\
+\rowcolor{rowhl}
+\textbf{VisJev-7B + CV-Zoom ($\theta{=}0.85$, 25.9\% esc.)} & \textbf{84.67\%} & 91.36\% / \textbf{75.99\%} & 484.2 / 578.1 & 5.17$\times$ & --- & --- \\
 \bottomrule
 \end{tabular}
 \begin{flushleft}
 \vspace{-4pt}
-{\scriptsize \textsuperscript{$\dagger$}Single-pass configurations have near-identical mean and median latency (within $0.6\%$, e.g., $331.4$ vs.\ $333.3\,\text{ms}$); speedup computed from reported latency vs.\ $2{,}158.5\,\text{ms}$ AR.}
+{\scriptsize \textsuperscript{$\dagger$}Single-pass configurations have near-identical mean and median latency (within $1.1\%$); E / H denote Easy (Cross-Platform) and Hard (Same-Platform \& Same-Type) abstention AUROC.}
 \end{flushleft}
 \end{table*}
 
@@ -535,20 +548,20 @@ followed by a local $2{\times}$ crop ($4{\times}$ effective zoom) on tile $t^*$ 
 \section{Experimental Setup \& Results}
 \label{sec:exp}
 
-\subsection{Training Data \& Evaluation Protocol}
-We train VisJev-AttnPatch on only \textbf{1,200 unique filtered web samples} from \href{https://huggingface.co/datasets/Voxel51/WaveUI-25k}{WaveUI-25k}, using rich semantic \texttt{purpose}/\texttt{description} fields rather than noisy accessibility tags. Training finishes in \textbf{29\,minutes} on a single NVIDIA L4 GPU, updating only $0.13\%$ LoRA parameters ($r{=}24$, layers $20\text{--}35$) plus the $2.69\text{M}$-parameter pointer/abstention head ($30.5\,\text{MB}$ total checkpoint). We evaluate strictly \textbf{zero-shot} on \href{https://huggingface.co/datasets/lmms-lab/ScreenSpot-v2}{ScreenSpot-v2} ($n{=}1{,}272$ full benchmark across $8$ mobile, desktop, and web platforms; $n{=}300$ matched controlled suite with calibration and multi-difficulty abstention stress tests) and \href{https://huggingface.co/datasets/HongxinLi/ScreenSpot-Pro}{ScreenSpot-Pro} ($n{=}200$ 4K professional software). All full-benchmark totals are computed as exact sample-weighted micro-averages over $718$ text and $554$ icon queries.
+\subsection{Training Data \& Cross-Scale Protocol}
+We train VisJev-AttnPatch on only \textbf{1,200 unique filtered web samples} from \href{https://huggingface.co/datasets/Voxel51/WaveUI-25k}{WaveUI-25k}, using rich semantic \texttt{purpose}/\texttt{description} fields rather than noisy accessibility tags. To validate cross-scale generalization, we train both \textbf{VisJev-AttnPatch-3B} atop Qwen2.5-VL-3B-Instruct ($36$ layers, $16$ heads; tapping top-$12$ layers $24\text{--}35$, $M{=}192$ pointer heads, Top-$16$ LoRA $r{=}24$, $2.69\text{M}$ head, $30.5\,\text{MB}$ total checkpoint, \textbf{29\,min} on one L4 GPU) and \textbf{VisJev-AttnPatch-7B} atop Qwen2.5-VL-7B-Instruct ($28$ layers, $28$ heads; tapping top-$12$ layers $16\text{--}27$, $M{=}336$ pointer heads, Top-$12$ LoRA $r{=}16$, $4.71\text{M}$ head + $4.33\text{M}$ LoRA, $34.5\,\text{MB}$ checkpoint, \textbf{36.6\,min} on one L4 GPU). We evaluate strictly \textbf{zero-shot} on \href{https://huggingface.co/datasets/lmms-lab/ScreenSpot-v2}{ScreenSpot-v2} ($n{=}1{,}272$ full benchmark across $8$ mobile, desktop, and web platforms; $n{=}300$ matched controlled suite) and \href{https://huggingface.co/datasets/HongxinLi/ScreenSpot-Pro}{ScreenSpot-Pro} ($n{=}200$ 4K professional software). All full-benchmark totals are exact sample-weighted micro-averages over $718$ text and $554$ icon queries, accompanied by $5{,}000$-resample bootstrap $95\%$ confidence intervals and exact two-sided McNemar significance tests.
 
-\subsection{Main Grounding, SOTA Comparison \& Cascade Results}
-Table~\ref{tab:main} and Figure~\ref{fig:pareto} report our matched controlled ($n{=}300$) and full-benchmark ($n{=}1{,}272$) results. On the exact matched $n{=}300$ split, official Qwen2.5-VL-3B-Instruct autoregressive decoding attains \textbf{82.33\%} ($89.70\%$ Text / $73.33\%$ Icon) at \textbf{2,158.5\,ms} mean ($2{,}139.1\,\text{ms}$ median) latency. VisJev-v6 single-pass sub-patch grounding reaches \textbf{83.33\%} at $327.7\,\text{ms}$ median ($6.59\times$ speedup) with \textbf{0.0776 ECE}, and pure-vision InnerZoom ($\theta{=}0.82$) reaches \textbf{85.67\%} at $407.4\,\text{ms}$ mean (\textbf{5.30$\times$ mean speedup}).
+\subsection{Main Grounding, 7B Scaling \& SOTA Comparison}
+Table~\ref{tab:main} and Figure~\ref{fig:pareto} report our matched controlled ($n{=}300$) and full-benchmark ($n{=}1{,}272$) results across both 3B and 7B scales. On the exact matched $n{=}300$ split, official Qwen2.5-VL-3B and 7B autoregressive decoding attain \textbf{82.33\%} ($2{,}158.5\,\text{ms}$ mean) and \textbf{79.33\%} ($2{,}991.0\,\text{ms}$ mean; larger untuned 7B AR suffers more coordinate formatting drift). In contrast, single-pass sub-patch grounding reaches \textbf{83.33\%} on 3B ($327.7\,\text{ms}$ median, $6.59\times$ speedup, $0.0776$ ECE) and \textbf{86.00\%} on 7B ($463.2\,\text{ms}$ mean, $6.46\times$ speedup, \textbf{0.0313 ECE}).
 
-Across all $1{,}272$ ScreenSpot-v2 samples, single-pass sub-patch grounding achieves \textbf{81.92\%} ($90.53\%$ Text / $70.76\%$ Icon) at $333.3\,\text{ms}$ mean ($331.4\,\text{ms}$ median, \textbf{6.48$\times$ mean speedup}). Replacing naive cropping ($83.02\%$) with \textbf{Confidence-Verified InnerZoom (CV-Zoom)} lifts full-benchmark accuracy to \textbf{83.25\%} at $393.9\,\text{ms}$ mean (\textbf{5.48$\times$ mean speedup}, $\theta{=}0.82$, $19.5\%$ escalation, $54.8\%$ accepted) and \textbf{84.36\%} ($92.76\%$ Text / $73.47\%$ Icon) at $477.4\,\text{ms}$ mean (\textbf{4.52$\times$ mean speedup}, $\theta{=}0.85$, $46.5\%$ escalation, $45.4\%$ accepted)---with $0$ decoded tokens.
+Across all $1{,}272$ ScreenSpot-v2 samples, single-pass sub-patch grounding achieves \textbf{81.92\%} ($95\%$ CI $[79.80, 84.04]$, $333.3\,\text{ms}$ mean, \textbf{6.48$\times$} speedup) on 3B and \textbf{83.73\%} ($90.95\%$ Text / $74.37\%$ Icon, $463.2\,\text{ms}$ mean, \textbf{6.46$\times$} speedup) on 7B---where scaling the backbone boosts single-pass icon grounding by $+3.61\%$. Applying \textbf{Confidence-Verified InnerZoom (CV-Zoom)} lifts full-benchmark 3B accuracy to \textbf{83.25\%} ($5.48\times$, $\theta{=}0.82$), \textbf{84.36\%} ($95\%$ CI $[82.31, 86.32]$, $4.52\times$, $\theta{=}0.85$), and \textbf{84.91\%} ($95\%$ CI $[82.94, 86.87]$, $3.68\times$, $\theta{=}0.90$), while lifting 7B accuracy to \textbf{84.67\%} ($91.36\%$ Text / \textbf{75.99\%} Icon) at \textbf{5.17$\times$ mean speedup} ($578.1\,\text{ms}$ mean, only $25.9\%$ escalation) with $0$ decoded tokens.
 
 \begin{table}[t]
 \centering
 \caption{Cross-method zero-shot comparison on ScreenSpot-v2 ($n{=}1{,}272$) and 4K ScreenSpot-Pro. Published baselines from \cite{guiactor,qwen25vl,osatlas,uitars}.}
 \label{tab:sota}
-\footnotesize
-\setlength{\tabcolsep}{2.4pt}
+\scriptsize
+\setlength{\tabcolsep}{2.2pt}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 \textbf{Method} & \textbf{Mode} & \textbf{Train Data} & \textbf{SS-v2} & \textbf{SS-Pro} \\
@@ -565,42 +578,54 @@ GUI-Actor-7B-LiteTrain \cite{guiactor} & 0-tok & 103M upd. & 74.9\% & 22.9\% \\
 GUI-Actor-3B (Full SFT) \cite{guiactor} & 0-tok & 1M+ Full & 91.0\% & 42.2\% \\
 \midrule
 \rowcolor{rowhl}
-\textbf{VisJev-AttnPatch (SP)} & \textbf{0-tok} & \textbf{1.2k (30.5MB)} & \textbf{81.9\%} & 5.0\% \\
+\textbf{VisJev-3B (SP / +CV-Zoom)} & \textbf{0-tok} & \textbf{1.2k (30.5MB)} & \textbf{81.9 / 84.9\%} & \textbf{32.0\%}\textsuperscript{$\ddagger$} \\
 \rowcolor{rowhl}
-\textbf{VisJev + CV-Zoom / 4K-Tile} & \textbf{0-tok} & \textbf{1.2k (30.5MB)} & \textbf{84.4\%} & \textbf{31.5\%}\textsuperscript{$\ddagger$} \\
+\textbf{VisJev-7B (SP / +CV-Zoom)} & \textbf{0-tok} & \textbf{1.2k (34.5MB)} & \textbf{83.7 / 84.7\%} & \textbf{38.0\%}\textsuperscript{$\ddagger$} \\
 \bottomrule
 \end{tabular}
 \begin{flushleft}
 \vspace{-4pt}
-{\scriptsize \textsuperscript{$\ddagger$}Evaluated on $n{=}200$ 4K ScreenSpot-Pro with zero-retraining $2{\times}2$ overlapping tiled routing + $4{\times}$ local zoom ($0$ decoded tokens).}
+{\scriptsize \textsuperscript{$\ddagger$}Evaluated on $n{=}200$ 4K ScreenSpot-Pro with zero-retraining $2{\times}2$ tiled routing + $4{\times}$ local zoom ($0$ decoded tokens).}
 \end{flushleft}
 \end{table}
 
-Table~\ref{tab:sota} positions VisJev-AttnPatch against contemporary AR and coordinate-free baselines. Using only $1{,}200$ training samples and $30.5\,\text{MB}$ of updated weights, VisJev-AttnPatch + CV-Zoom ($84.4\%$) surpasses official Qwen2.5-VL-3B ($80.9\%$), GPT-4o + OmniParser-v2 ($80.7\%$), and both GUI-Actor-2B/7B-LiteTrain models even with their external verifier ($82.3\% / 83.8\%$), while approaching full-SFT UI-TARS-2B ($84.7\%$).
+Table~\ref{tab:sota} compares VisJev-AttnPatch-3B/7B against contemporary AR and coordinate-free baselines. With only $1{,}200$ training samples ($30.5\text{--}34.5\,\text{MB}$ weights), VisJev-3B/7B surpasses official Qwen2.5-VL-3B ($80.9\%$), GPT-4o + OmniParser-v2 ($80.7\%$), and GUI-Actor-2B/7B-LiteTrain even when paired with an external verifier ($82.3\% / 83.8\%$ on SS-v2; $34.0\% / 35.8\%$ on SS-Pro vs.\ \textbf{38.0\%} for VisJev-7B), while matching full-SFT UI-TARS-2B ($84.7\%$).
 
 \takeawaybox{Key Finding (Pure-Vision Zoom vs.\ AR Cascade)}{On the hardest $25\%$ of clicks (Table~\ref{tab:cascade}), escalating to a single-pass $2{\times}$ visual zoom (\textbf{85.67\%}, $407.4\,\text{ms}$ mean, \textbf{5.30$\times$} speedup) \textbf{strictly outperforms} falling back to autoregressive Qwen2.5-VL-3B ($83.00\%$ at $25\%$ AR / $82.67\%$ at $50\%$ AR, $997\text{--}1{,}526\,\text{ms}$).}
 
 \begin{table}[t]
 \centering
-\caption{Three-tier cascade sweep ($n{=}300$, ScreenSpot-v2). Pure-vision InnerZoom ($\theta_{\mathrm{AR}}{=}0$) dominates AR fallback in both accuracy and latency.}
+\caption{Three-tier cascade ($n{=}300$) and full ScreenSpot-v2 ($n{=}1{,}272$) CV-Zoom threshold sensitivity \& McNemar tests (3B).}
 \label{tab:cascade}
-\footnotesize
-\setlength{\tabcolsep}{2.4pt}
+\scriptsize
+\setlength{\tabcolsep}{2.2pt}
 \begin{tabular}{@{}cccccc@{}}
 \toprule
+\multicolumn{6}{@{}l}{\textit{\color{slate}(a) Three-Tier Cascade Sweep ($n{=}300$, ScreenSpot-v2)}} \\
 $(\theta_{\mathrm{zoom}}, \theta_{\mathrm{AR}})$ & \textbf{S1/Zm/AR (\%)} & \textbf{Acc} & \textbf{Med.} & \textbf{Mean} & \textbf{Spd.} \\
 \midrule
 \rowcolor{rowhl}
 \textbf{(0.82, 0.00)} & 75.0 / 25.0 / \textbf{0.0} & \textbf{85.67\%} & \textbf{335.9} & \textbf{407.4} & \textbf{5.30$\times$} \\
-(0.85, 0.00) & 50.0 / 50.0 / 0.0 & 85.00\% & 405.6 & 486.4 & 4.44$\times$ \\
 (0.85, 0.78) & 50.0 / 42.3 / 7.7 & 85.33\% & 405.6 & 631.5 & 3.42$\times$ \\
 (0.86, 0.82) & 40.3 / 34.7 / 25.0 & 83.00\% & 647.9 & 997.0 & 2.16$\times$ \\
 (0.88, 0.85) & 22.7 / 27.3 / 50.0 & 82.67\% & 1,500.3 & 1,526.2 & 1.41$\times$ \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{\color{slate}(b) Full $n{=}1{,}272$ CV-Zoom Threshold Sweep (3B, 0\% AR)}} \\
+\textbf{Threshold $\theta$} & \textbf{Esc.\ / Acc.\ (\%)} & \textbf{Naive} & \textbf{CV-Zoom (95\% CI)} & \textbf{Mean} & \textbf{Spd.} \\
+\midrule
+$\theta{=}0.75$ & 1.0 / 61.5 & 82.00\% & 81.92\% [79.8, 84.0] & 334.1 & 6.46$\times$ \\
+$\theta{=}0.80$ & 9.2 / 59.8 & 82.86\% & 82.94\% [80.8, 85.0] & 359.9 & 6.00$\times$ \\
+$\theta{=}0.82$ & 19.5 / 54.8 & 82.47\% & 83.25\% [81.2, 85.2] & 390.9 & 5.52$\times$ \\
+\rowcolor{rowhl}
+\textbf{$\theta{=}0.85$} & 46.5 / 45.4 & 83.02\% & \textbf{84.36\%} [82.3, 86.3] & 473.6 & 4.56$\times$ \\
+$\theta{=}0.88$ & 71.8 / 41.7 & 82.94\% & 84.83\% [82.9, 86.8] & 549.4 & 3.93$\times$ \\
+\rowcolor{rowhl}
+\textbf{$\theta{=}0.90$} & 84.2 / 40.1 & 83.18\% & \textbf{84.91\%} [82.9, 86.9] & 587.3 & 3.68$\times$ \\
 \bottomrule
 \end{tabular}
 \begin{flushleft}
 \vspace{-4pt}
-{\scriptsize Latencies (Med., Mean) in ms on NVIDIA L4; speedup vs.\ $2{,}158.5\,\text{ms}$ matched AR.}
+{\scriptsize Exact paired McNemar tests ($n{=}1{,}272$): $3{\times}3$ vs.\ $1{\times}1$ ($b{=}64, c{=}11, p{=}3.11{\times}10^{-10}$); CV-Zoom ($0.85$) vs.\ SP ($b{=}38, c{=}7, p{=}3.12{\times}10^{-6}$); CV-Zoom vs.\ Naive ($b{=}42, c{=}25, p{=}0.0498$).}
 \end{flushleft}
 \end{table}
 
@@ -655,69 +680,78 @@ $(\theta_{\mathrm{zoom}}, \theta_{\mathrm{AR}})$ & \textbf{S1/Zm/AR (\%)} & \tex
   }
 \end{tikzpicture}%
 }
-\caption{Full ScreenSpot-v2 ($n{=}1{,}272$) zero-shot accuracy breakdown across all eight platforms comparing Single-Pass (SP), Naive InnerZoom, and \textbf{Confidence-Verified InnerZoom (CV-Zoom, $\theta{=}0.85$)}. Naive cropping degrades mobile text (\textbf{iOS}: $-6.53\%$, \textbf{Android}: $-3.33\%$) due to global context loss; CV-Zoom completely reverses this negative transfer (\textbf{iOS}: $100.00\%$, \textbf{Android}: $97.50\%$) while preserving dense web icon gains (\textbf{Shop}: $+6.09\%$, \textbf{Tool}: $+5.55\%$). All bars match Table~\ref{tab:full1272} verbatim.}
+\caption{Full ScreenSpot-v2 ($n{=}1{,}272$) zero-shot accuracy breakdown across all eight platforms comparing Single-Pass (SP), Naive InnerZoom, and \textbf{Confidence-Verified InnerZoom (CV-Zoom, $\theta{=}0.85$)} on 3B. Naive cropping degrades mobile text (\textbf{iOS}: $-6.53\%$, \textbf{Android}: $-3.33\%$) due to global context loss; CV-Zoom completely reverses this negative transfer (\textbf{iOS}: $100.00\%$, \textbf{Android}: $97.50\%$) while preserving dense web icon gains (\textbf{Shop}: $+6.09\%$, \textbf{Tool}: $+5.55\%$). All bars match Table~\ref{tab:full1272} verbatim.}
 \label{fig:platforms}
 \end{figure*}
 
 \subsection{Multi-Difficulty Abstention \& 4K ScreenSpot-Pro}
-To test whether VisJev's \texttt{[ABSTAIN]} gate handles realistic refusal scenarios beyond trivial cross-domain mismatches, Table~\ref{tab:abstain_4k} evaluates two negative-sampling regimes on ScreenSpot-v2 ($300$ positives + $300$ negatives each): (i) \emph{Easy (Cross-Platform)}, pairing instructions with screenshots from a different platform, and (ii) \emph{Hard (Same-Platform \& Same-Type)}, pairing an instruction (e.g., an iOS icon query) with another screenshot of the exact same platform and element type where the target is absent. Even under the hard same-platform regime, VisJev maintains \textbf{0.9535 AUROC}, \textbf{0.9632 AUPRC}, and \textbf{86.67\% TPR@5\%FPR}.
+Table~\ref{tab:abstain_4k}(a) evaluates our \texttt{[ABSTAIN]} gate under two negative-sampling regimes ($300$ positives + $300$ negatives each): \emph{Easy (Cross-Platform)} and \emph{Hard (Same-Platform \& Same-Type)}. Even on hard same-platform negatives, VisJev-3B attains \textbf{0.9535 AUROC} ($86.67\%$ TPR@5\%FPR) and VisJev-7B improves further to \textbf{0.9576 AUROC} (\textbf{0.9754} cross-platform, $92.33\%$ TPR@5\%FPR).
 
-Table~\ref{tab:abstain_4k} (bottom) also demonstrates our zero-retraining solution to the 4K resolution bottleneck on \href{https://huggingface.co/datasets/HongxinLi/ScreenSpot-Pro}{ScreenSpot-Pro} ($n{=}200$). Compressing 4K CAD/IDE interfaces into $768$ tokens yields only $5.0\%$ accuracy. Applying $2{\times}2$ overlapping tiled QK-pointer routing via Eq.~\eqref{eq:tiled4k} triples accuracy to $15.0\%$, and adding a local $2{\times}$ crop on the winning tile ($4{\times}$ effective zoom) leaps to \textbf{31.5\%} at $1{,}560.8\,\text{ms}$ mean latency---surpassing official Qwen2.5-VL-3B AR ($25.9\%$) with $0$ decoded tokens and $0$ 4K training examples.
+Table~\ref{tab:abstain_4k}(b) evaluates zero-retraining 4K routing on \href{https://huggingface.co/datasets/HongxinLi/ScreenSpot-Pro}{ScreenSpot-Pro} ($n{=}200$). Single-pass $768$-token inference yields only $5.0\%$ (3B) and $2.0\%$ (7B). Applying $2{\times}2$ tiled QK-pointer routing (Eq.~\eqref{eq:tiled4k}) with $4{\times}$ local zoom jumps to \textbf{31.5\%} ($8\%$ overlap) and \textbf{32.0\%} ($0\%$ overlap) on 3B, and \textbf{38.0\%} on 7B---reaching \textbf{53.3\%} on DaVinci Resolve and \textbf{42.5\%} on Android Studio with $0$ decoded tokens.
 
 \begin{table}[t]
 \centering
-\caption{Multi-difficulty abstention stress test ($n{=}600$ each) and zero-retraining 4K ScreenSpot-Pro ($n{=}200$) evaluation.}
+\caption{Multi-difficulty abstention ($n{=}600$ each) and zero-retraining 4K ScreenSpot-Pro ($n{=}200$) across 3B and 7B.}
 \label{tab:abstain_4k}
 \scriptsize
-\setlength{\tabcolsep}{2.4pt}
+\setlength{\tabcolsep}{1.7pt}
 \begin{tabular}{@{}lccc@{}}
 \toprule
 \multicolumn{4}{@{}l}{\textit{\color{slate}(a) Abstention Stress Test (ScreenSpot-v2, 300 Pos + 300 Neg)}} \\
-\textbf{Negative Regime} & \textbf{AUROC $\uparrow$} & \textbf{AUPRC $\uparrow$} & \textbf{TPR@5\%FPR $\uparrow$} \\
+\textbf{Model / Negative Regime} & \textbf{AUROC $\uparrow$} & \textbf{AUPRC $\uparrow$} & \textbf{TPR@5\% $\uparrow$} \\
 \midrule
-Easy (Cross-Platform) & \textbf{0.9720} & \textbf{0.9747} & \textbf{88.00\%} \\
+VisJev-3B Easy (Cross-Platform) & 0.9720 & \textbf{0.9747} & 88.00\% \\
+VisJev-3B Hard (Same-Plat.\ \& Type) & 0.9535 & \textbf{0.9632} & 86.67\% \\
+VisJev-7B Easy (Cross-Platform) & \textbf{0.9754} & 0.9715 & \textbf{92.33\%} \\
 \rowcolor{rowhl}
-\textbf{Hard (Same-Platform \& Type)} & \textbf{0.9535} & \textbf{0.9632} & \textbf{86.67\%} \\
+\textbf{VisJev-7B Hard (Same-Plat.\ \& Type)} & \textbf{0.9576} & 0.9415 & \textbf{87.33\%} \\
 \midrule
 \multicolumn{4}{@{}l}{\textit{\color{slate}(b) 4K ScreenSpot-Pro ($n{=}200$, Zero Retraining, 0 Tokens)}} \\
-\textbf{4K Inference Strategy} & \textbf{Acc $\uparrow$} & \textbf{Mean Lat.\ (ms)} & \textbf{Tokens} \\
+\textbf{4K Strategy / Scale} & \textbf{Acc $\uparrow$} & \textbf{Mean (ms)} & \textbf{Tok.} \\
 \midrule
-768-tok Single-Pass & 5.0\% & 331.0 & 0 \\
-$2{\times}2$ Overlapping Tiled Routing & 15.0\% & 1,327.2 & 0 \\
+VisJev-3B 768-tok Single-Pass & 5.0\% & 331.0 & 0 \\
+VisJev-3B $2{\times}2$ Tiled ($8\% / 0\%$ ovlp) & 15.0 / 20.0\% & 1,327.2 & 0 \\
 \rowcolor{rowhl}
-\textbf{$2{\times}2$ Tiled + $4{\times}$ Local Zoom} & \textbf{31.5\%} & \textbf{1,560.8} & \textbf{0} \\
+\textbf{VisJev-3B $2{\times}2$ Tiled + $4{\times}$ Zoom} & \textbf{31.5 / 32.0\%} & \textbf{1,560.8} & \textbf{0} \\
+VisJev-7B $2{\times}2$ Tiled ($10\%$ ovlp) & 18.5\% & 1,845.4 & 0 \\
+\rowcolor{rowhl}
+\textbf{VisJev-7B $2{\times}2$ Tiled + $4{\times}$ Zoom} & \textbf{38.0\%} & \textbf{2,142.8} & \textbf{0} \\
 \bottomrule
 \end{tabular}
+\begin{flushleft}
+\vspace{-4pt}
+{\scriptsize 3B per-domain 4K accuracy ($8\% / 0\%$ overlap): DaVinci Resolve \textbf{53.3\%} / 46.7\% ($n{=}15$), Android Studio \textbf{42.5\%} / 40.0\% ($n{=}80$), Blender 25.4\% / \textbf{26.8\%} ($n{=}71$), AutoCAD 8.8\% / \textbf{17.7\%} ($n{=}34$).}
+\end{flushleft}
 \end{table}
 
-\subsection{Component Ablation \& Platform Breakdown}
-Figure~\ref{fig:ablation} isolates each architectural component on ScreenSpot-v2 ($n{=}300$). Removing the QK-pointer router leaves only the residual head (\texttt{res\_only}, $7.00\%$). Enabling pretrained QK-pointer routing alone (\texttt{ptr\_only}) jumps to $73.33\%$ ($+66.33\%$), fusion reaches $77.33\%$ ($+4.00\%$), zero-cost $3{\times}3$ sub-patch soft-argmax adds $+6.00\%$ ($83.33\%$), and pure-vision InnerZoom ($\theta{=}0.82$) adds $+2.34\%$ to $85.67\%$.
+\subsection{Statistical Significance, Mechanistic Routing \& Platforms}
+Table~\ref{tab:cascade}(b) and our full-$1{,}272$ kernel ablation verify statistical significance and hyperparameter robustness. On full ScreenSpot-v2, $3{\times}3$ sub-patch soft-argmax ($81.92\%$) outperforms $1{\times}1$ discrete argmax ($77.75\%$, $+4.17\%$, exact McNemar $p{=}3.11{\times}10^{-10}$) and $5{\times}5$ ($81.45\%$, which slightly over-smooths small icons). Across $\theta \in [0.75, 0.90]$, CV-Zoom monotonically improves accuracy up to \textbf{84.91\%} while significantly outperforming single-pass ($p{=}3.12{\times}10^{-6}$) and naive zoom ($p{=}0.0498$ at $\theta{=}0.85$). Mechanistic inspection of the learned router weights $\bm{w}$ across layers $24\text{--}35$ reveals that the router converges to a sparse depth specialization, concentrating $>99.9\%$ of its probability mass on \textbf{Layer~27} ($75\%$ network depth) for both text and icon queries---confirming that mid-upper VLM decoder layers preserve the sharpest spatial query-to-patch alignment before final-layer causal token aggregation.
 
-Figure~\ref{fig:platforms} and Table~\ref{tab:full1272} report the exact sample-weighted $n{=}1{,}272$ platform breakdown comparing Single-Pass (SP), Naive InnerZoom, and CV-Zoom ($\theta{=}0.85$). Under Naive InnerZoom, large mobile text controls suffer negative transfer (\textbf{iOS}: $99.28\% \rightarrow 92.75\%$, \textbf{Android}: $95.83\% \rightarrow 92.50\%$) because tightly cropping a large widget removes surrounding layout cues. CV-Zoom's confidence-verification gate (Eq.~\eqref{eq:cvzoom}) automatically rejects degraded crops ($54.6\%$ rejected at $\theta{=}0.85$), lifting iOS text to \textbf{100.00\%}, Android text to \textbf{97.50\%}, Android icons to \textbf{84.62\%}, and Shop icons to \textbf{68.70\%}, raising overall weighted accuracy to \textbf{92.76\%} Text and \textbf{73.47\%} Icon (\textbf{84.36\%} overall).
+Figure~\ref{fig:platforms} and Table~\ref{tab:full1272} report the complete $n{=}1{,}272$ per-platform breakdown for both 3B and 7B. CV-Zoom completely eliminates mobile negative transfer (3B iOS text $92.75\% \rightarrow \mathbf{100.00\%}$; 7B Android icon $\mathbf{90.11\%}$, Shop icon $\mathbf{72.17\%}$).
 
 \begin{table}[t]
 \centering
-\caption{Full ScreenSpot-v2 ($n{=}1{,}272$) per-platform accuracy: Sub-Patch (SP), Naive Zoom (NZ), and CV-Zoom ($\theta{=}0.85$). Bottom row shows exact sample-weighted micro-averages.}
+\caption{Full ScreenSpot-v2 ($n{=}1{,}272$) per-platform accuracy across \textbf{3B} (SP / NZ / CV) and \textbf{7B} (CV, $\theta{=}0.85$), with exact sample-weighted micro-averages.}
 \label{tab:full1272}
-\footnotesize
-\setlength{\tabcolsep}{2.2pt}
-\begin{tabular}{@{}lrrrrrrr@{}}
+\scriptsize
+\setlength{\tabcolsep}{1.7pt}
+\begin{tabular}{@{}lrrrrrrrrr@{}}
 \toprule
-& \multicolumn{3}{c}{\textbf{Text (\%)}} & \multicolumn{3}{c}{\textbf{Icon (\%)}} & \textbf{Count} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7}
-\textbf{Platform} & \textbf{SP} & \textbf{NZ} & \textbf{CV} & \textbf{SP} & \textbf{NZ} & \textbf{CV} & \textbf{(T/I)} \\
+& \multicolumn{4}{c}{\textbf{Text (\%)}} & \multicolumn{4}{c}{\textbf{Icon (\%)}} & \textbf{Cnt} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+\textbf{Plat.} & \textbf{3B-SP} & \textbf{3B-NZ} & \textbf{3B-CV} & \textbf{7B-CV} & \textbf{3B-SP} & \textbf{3B-NZ} & \textbf{3B-CV} & \textbf{7B-CV} & \textbf{(T/I)} \\
 \midrule
-iOS & 99.28 & 92.75 & \textbf{100.0} & 79.00 & \textbf{80.00} & \textbf{80.00} & 138/100 \\
-Android & 95.83 & 92.50 & \textbf{97.50} & 82.42 & 80.22 & \textbf{84.62} & 120/91 \\
-Windows & 92.71 & 92.71 & \textbf{93.75} & 74.60 & \textbf{76.19} & \textbf{76.19} & 96/63 \\
-macOS & 88.10 & 92.86 & \textbf{94.05} & \textbf{71.43} & \textbf{71.43} & \textbf{71.43} & 84/63 \\
-GitLab & 86.36 & \textbf{95.45} & 90.91 & \textbf{68.97} & 65.52 & \textbf{68.97} & 44/29 \\
-Shop & 83.85 & \textbf{86.92} & 86.15 & 62.61 & 67.83 & \textbf{68.70} & 130/115 \\
-Tool & 81.82 & \textbf{86.36} & \textbf{86.36} & 59.26 & \textbf{68.52} & 64.81 & 66/54 \\
-Forum & \textbf{85.00} & \textbf{85.00} & 82.50 & 56.41 & \textbf{61.54} & 58.97 & 40/39 \\
+iOS & 99.28 & 92.75 & \textbf{100.0} & 97.10 & 79.00 & 80.00 & 80.00 & \textbf{85.00} & 138/100 \\
+Andr. & 95.83 & 92.50 & \textbf{97.50} & 95.00 & 82.42 & 80.22 & 84.62 & \textbf{90.11} & 120/91 \\
+Win. & 92.71 & 92.71 & \textbf{93.75} & 92.71 & 74.60 & \textbf{76.19} & \textbf{76.19} & \textbf{76.19} & 96/63 \\
+macOS & 88.10 & 92.86 & \textbf{94.05} & 91.67 & \textbf{71.43} & \textbf{71.43} & \textbf{71.43} & \textbf{71.43} & 84/63 \\
+GitLab & 86.36 & \textbf{95.45} & 90.91 & 93.18 & \textbf{68.97} & 65.52 & \textbf{68.97} & 62.07 & 44/29 \\
+Shop & 83.85 & 86.92 & 86.15 & \textbf{88.46} & 62.61 & 67.83 & 68.70 & \textbf{72.17} & 130/115 \\
+Tool & 81.82 & \textbf{86.36} & \textbf{86.36} & 77.27 & 59.26 & \textbf{68.52} & 64.81 & 61.11 & 66/54 \\
+Forum & 85.00 & 85.00 & 82.50 & \textbf{87.50} & 56.41 & 61.54 & 58.97 & \textbf{69.23} & 40/39 \\
 \midrule
 \rowcolor{rowhl}
-\textbf{All (1,272)} & 90.53 & 90.81 & \textbf{92.76} & 70.76 & 72.92 & \textbf{73.47} & \textbf{718/554} \\
+\textbf{All} & 90.53 & 90.81 & \textbf{92.76} & 91.36 & 70.76 & 72.92 & 73.47 & \textbf{75.99} & \textbf{718/554} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -727,17 +761,17 @@ Forum & \textbf{85.00} & \textbf{85.00} & 82.50 & 56.41 & \textbf{61.54} & 58.97
 % =========================================================================
 \section{Conclusion \& Limitations}
 \label{sec:conclusion}
-VisJev-AttnPatch demonstrates that accurate, DOM-free GUI grounding does not require slow autoregressive token decoding. With only $1{,}200$ filtered web examples and a $30.5\,\text{MB}$ adapter checkpoint, our single-pass QK-pointer architecture with Confidence-Verified InnerZoom reaches \textbf{84.36\%} zero-shot accuracy across all $1{,}272$ ScreenSpot-v2 queries ($4.52\times$ mean speedup; \textbf{83.25\%} at $5.48\times$; \textbf{81.92\%} single-pass at $6.48\times$), surpasses matched Qwen2.5-VL-3B AR decoding ($82.33\%$), maintains \textbf{0.9535} hard same-platform abstention AUROC, and scales zero-shot to \textbf{31.5\%} on 4K ScreenSpot-Pro via $2{\times}2$ tiled QK-pointer routing with $0$ decoded tokens.
+VisJev-AttnPatch demonstrates that accurate, calibrated DOM-free GUI grounding does not require slow autoregressive token decoding. Validated across both \textbf{Qwen2.5-VL-3B} ($30.5\,\text{MB}$) and \textbf{Qwen2.5-VL-7B} ($34.5\,\text{MB}$) trained on only $1{,}200$ WaveUI-25k examples, our single-pass QK-pointer architecture with $0$\,ms $3{\times}3$ sub-patch refinement ($p{=}3.11{\times}10^{-10}$) and Confidence-Verified InnerZoom ($p{=}3.12{\times}10^{-6}$) reaches \textbf{84.36\%--84.91\%} (3B) and \textbf{84.67\%} (7B) on full ScreenSpot-v2 at \textbf{4.5--6.5$\times$ mean speedup}, achieves \textbf{0.9535--0.9576} hard same-platform abstention AUROC with \textbf{0.0313} ECE, and scales zero-shot to \textbf{32.0\%} (3B) and \textbf{38.0\%} (7B) on 4K ScreenSpot-Pro with $0$ decoded tokens.
 
 \paragraph{Limitations \& Future Work.}
-First, all experiments build on Qwen2.5-VL-3B-Instruct; validating QK-pointer transfer on 7B+ and non-Qwen VLM backbones remains future work. Second, while $2{\times}2$ tiled routing + $4{\times}$ zoom raises 4K ScreenSpot-Pro accuracy to $31.5\%$, full-scale multi-resolution training (as in full-SFT GUI-Actor-3B at $42.2\%$) can further close the gap on dense CAD/IDE interfaces.
+While we validate VisJev-AttnPatch across 3B and 7B Qwen2.5-VL backbones, extending QK-pointer routing to non-Qwen VLM families (e.g., InternVL, Llama-Vision) and incorporating native 4K multi-resolution training to close the remaining gap on dense CAD interfaces ($17.7\%$ on AutoCAD vs.\ $53.3\%$ on DaVinci Resolve) are promising directions for future work.
 
 % =========================================================================
 % REFERENCES
 % =========================================================================
 \begin{thebibliography}{9}
 \footnotesize
-\setlength{\itemsep}{0.5pt}
+\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
 
 \bibitem{guiactor}
 Q.~Wu, K.~Cheng, R.~Yang, C.~Zhang, J.~Yang, H.~Jiang, J.~Mu, B.~Peng, B.~Qiao, R.~Tan, S.~Qin, L.~Liden, Q.~Lin, H.~Zhang, T.~Zhang, J.~Zhang, D.~Zhang, and J.~Gao, ``GUI-Actor: Coordinate-Free Visual Grounding for GUI Agents,'' in \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2025. \url{https://arxiv.org/abs/2506.03143}
